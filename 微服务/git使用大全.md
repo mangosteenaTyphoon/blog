@@ -100,3 +100,18 @@ git merge
 
 
 可以合并分支，常用的我目前了解的暂时就这么多了，后续如果有我用到其他的会更新的。
+
+如果我们在拉取代码的时候出现如下错误
+
+~~~ powershell
+fatal: refusing to merge unrelated histories
+~~~
+
+可以使用以下指令进行解决
+
+~~~ powershell
+git pull origin 分支名 --allow-unrelated-histories
+~~~
+
+
+
