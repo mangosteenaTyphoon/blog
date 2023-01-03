@@ -203,3 +203,46 @@ sudo systemctl restart docker
 
 ## Docker的基本操作
 
+### 镜像操作
+
+镜像名称一般分两部分组成：`[repository]:[tag]`，在没有指定的tag时，默认是latest，代表最新版的镜像。
+
+<img src="https://shanzhu-edu.oss-cn-shanghai.aliyuncs.com/blog/202301031705762.png" alt="image-20230103170505691" style="zoom:50%;" />
+
+#### 镜像操作命令
+
+从仓库中拉取一个nginx的镜像
+
+~~~shell
+docker pull nginx
+~~~
+
+通过命令查看镜像
+
+~~~shell
+docker images
+~~~
+
+将nginx的镜像导出磁盘
+
+~~~sh
+#导出 OPTIONS：文件名称 
+docker save [OPTIONS] IMAGE [IMAGE...]
+#举个例子
+docker save -o nginx.tar nginx:latest
+~~~
+
+删除掉docker中的nginx镜像
+
+~~~sh
+docker rmi nginx:latest
+~~~
+
+将刚才导出来的nginx镜像进行上传
+
+~~~sh
+docker load -i nginx.tar
+~~~
+
+<img src="https://shanzhu-edu.oss-cn-shanghai.aliyuncs.com/blog/202301031705358.png" alt="image-20230103170536263" style="zoom:67%;" />
+
