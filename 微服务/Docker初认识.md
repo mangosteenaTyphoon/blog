@@ -177,7 +177,7 @@ systemctl start docker  # 启动docker服务
 
 systemctl stop docker  # 停止docker服务
 
-systemctl restart docker  # 重启docker服务
+                                                                systemctl restart docker  # 重启docker服务
 ~~~
 
 然后输入命令，可以查看docker版本
@@ -296,7 +296,7 @@ docker logs -f name
 删除容器，但是不能删除运行中的容器 使用`-f`参数可以强制删除
 
 ~~~sh
-docker rm
+docker rm [容器名称]
 ~~~
 
 进行容器内部，exec进入容器内部可以修改文件，但是在容器内修改文件是不推荐的。
@@ -306,3 +306,105 @@ docker exec -it [容器名] [要执行的命令]
 ~~~
 
 容器内部会模拟一个独立的Linux文件系统，看起来如同一个linux服务器一样，nginx的环境、配置、运行文件全部都在这个文件系统中，包括我们要修改的html文件。但是容器内没有vi命令【没有多余的命令】，无法直接修改
+
+停止指定容器
+
+~~~sh
+docker stop mn
+~~~
+
+查看所有容器包括挂掉的
+
+~~~sh
+docker ps -a
+~~~
+
+### 数据卷操作
+
+有这样几个问题，Docker容器删除之后，在容器中产生的数据也会随之销毁吗，Docker容器可以与外部机器直接交换文件吗，容器之间如何进行数据交互。这个时候我们就要用到数据卷了，数据卷是宿主机中的一个文件或者目录。当容器目录和数据卷目录绑定之后，对方的修改会立即同步。一个数据卷可以同时被多个容器同时挂载。
+
+#### 数据卷的作用
+
+* 容器持久化   
+* 外部机器和容器间接通信
+* 容器之间数据交互
+
+#### 数据卷操作
+
+创建数据卷
+
+~~~sh
+docker volume create [数据卷名称]
+~~~
+
+查看全部的数据卷
+
+~~~sh
+docker volume ls		
+~~~
+
+查看数据卷存在宿主机中的位置
+
+~~~sh
+docker volume inspect [数据卷的名称]
+~~~
+
+删除本地所有的数据卷
+
+~~~sh
+docker volume prune
+~~~
+
+删除指定的卷
+
+~~~sh
+docker volume rm [数据卷名称]
+~~~
+
+#### 挂载数据卷
+
+> 我们可以将数据卷挂载在容器上去，这样就可以通过数据卷来修改容器内部的数据了。
+
+创建启动容器时，使用`-v`参数挂载数据卷
+
+~~~sh
+docker run --name [容器名称] -p [宿主端口]:[容器端口] -v [数据卷名称]:[容器内部的数据目录] -d [docker hub的容器名称]
+#举个例子 将html挂载到nginx上去
+docker run --name nginx -p 39002:80 -v html:/usr/share/nginx/html -d nginx
+~~~
+
+我们尝试修改nginx的html页面，先查看数据卷在宿主机的位置
+
+~~~sh
+docker inspect html
+~~~
+
+会打印出如下信息
+
+~~~sh
+[root@VM-4-8-centos ~]# docker inspect html
+[
+    {
+        "CreatedAt": "2023-01-04T16:06:47+08:00",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/html/_data",
+        "Name": "html",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+~~~
+
+其中的`Mountpoint`就是地址，然后我们进入这个地址，并打印目录信息
+
+~~~sh
+[root@VM-4-8-centos ~]# cd /var/lib/docker/volumes/html/_data
+[root@VM-4-8-centos _data]# ls
+50x.html  index.html
+~~~
+
+然后我们使用vim对html进行修改并且保存，在公网中访问nginx，会发现已经修改成功了。
+
+![image-20230104162857976](https://shanzhu-edu.oss-cn-shanghai.aliyuncs.com/blog/202301041628042.png)
