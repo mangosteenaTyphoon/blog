@@ -113,5 +113,15 @@ fatal: refusing to merge unrelated histories
 git pull origin 分支名 --allow-unrelated-histories
 ~~~
 
+## 本地代码与远程代码冲突
 
+### 强行拉取远程覆盖本地代码
+
+依次执行下面命令
+
+~~~sh
+git fetch --all
+git reset --hard origin/所在分支名
+git pull
+~~~
 
