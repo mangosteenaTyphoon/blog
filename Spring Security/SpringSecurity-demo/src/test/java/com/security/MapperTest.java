@@ -5,6 +5,7 @@ import com.security.enity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -12,6 +13,17 @@ import java.util.List;
 public class MapperTest {
     @Autowired(required = false)
     private UserMapper userMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Test
+    public void testPassword(){
+        String encode = passwordEncoder.encode("1234");
+        System.out.println(encode);
+    }
+
+
 
     @Test
     public void testUserMapper(){
